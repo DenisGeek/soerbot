@@ -2,80 +2,118 @@
 scale 1
 ' skinparam classAttributeIconSize 0
 
-interface IAddress
-{
-    + String Address 
-}
-interface IAddressee
-{
-    + String Addressee
-} 
+namespace API.Mail #DDDDDD {
+    IMailAddress o-- IMail
+    IMessage o-- IMail
 
-interface IMailAddress
-{
-}
+    IContent <|-- IMessage
+    IHeader <|-- IMessage
+    IAddressee <|-- IMailAddress
+    IAddress <|-- IMailAddress
 
-interface IHeader
-{
-    + String Header 
-}
-interface IMessage
-{
-    + JSON Message
-}
+    interface IAddress
+    {
+        + String Address 
+    }
+    interface IAddressee
+    {
+        + String Addressee
+    } 
 
-interface IMail
-{
-}
+    interface IMailAddress
+    {
+    }
 
-interface IMailHandler
-{
-}
-interface IMailSender
-{
-    - IPostSender PostSender
-    + void Init(IPostSender)
-    + void Send(IPostSender)
-}
-interface IPostSender
-{
-    + void Init()
-    + void Send(IMailAddress)
-}
-
-
-interface IMailReceiver
-{
-    + void Receive(IMailAddress)
-}
-interface IPostReceiver
-{
-    + IMailReceiver MailReceiver
-    + void Init(IMailReceiver)
-    + void Received(IMailAddress)
+    interface IHeader
+    {
+        + String Header 
+    }
+    interface IContent
+    {
+        + JSON Content
+    }
+    interface IMessage
+    {
+    }
+    interface IMail
+    {
+        + IMailAddress reciever
+        + IMailAddress sender
+        + IMessage message
+    }
 }
 
-interface IPostHandler
-{
+namespace API.Send #DDDDDD {
+    interface IMailSender
+    {
+        + MailPicker mailPicker
+        + void send(IMail)
+    }
+    class MailPicker << (S,#FF7700) Singleton >>
+    {
+        - List<IPostSender> sendes
+        + void refreshSenders()
+
+        + void send(IMail)
+    }
+    interface IPostSender
+    {
+        + void init()
+        + void send(IMail)
+    }
+
+    IMailSender ..> API.Mail.IMail
+    IMailSender "many" --o MailPicker :send
+    MailPicker --o "many" IPostSender :refreshSenders
+    API.Mail.IMail <-- IPostSender
 }
 
-IMessage <|-- IMailAddress
-IHeader <|-- IMailAddress
-IAddressee <|-- IMailAddress
-IAddress <|-- IMailAddress
 
-IMailHandler <|-- IMailReceiver
-IMailHandler <|-- IMailSender
+namespace API.Receive #DDDDDD {
+    interface IMailReceiver
+    {
+        + void receive(IMail)
+    }
+    class MailSorter << (S,#FF7700) Singleton >>
+    {
+        - List<IPostReceiver> recieves
+        - List<IMailReceiver> recipients
+        + void refreshReceivers()
+ 
+        + void registerRecipient(IMailReceiver)
+        + void deleteRecipient(IMailReceiver)
 
-IMailSender ..> IMailAddress
-IMailReceiver ..> IMailAddress
-IMailAddress <-- IPostSender
-IMailAddress <.. IPostReceiver
+       + void receive(IMail)
+    }
+    interface IPostReceiver
+    {
+        + IMailReceiver MailReceiver
+        + void init(MailSorter)
+        + void received(IMail)
+    }
 
-IMailSender --o IPostSender
-IMailReceiver o-- IPostReceiver
+    IMailReceiver ..> API.Mail.IMail
+    IMailReceiver "many" o-- MailSorter : registerRecipient
+    MailSorter "many" --o IPostReceiver : refreshReceivers
+    API.Mail.IMail <-- IPostReceiver
+}
 
-IPostReceiver --|> IPostHandler
-IPostSender  --|> IPostHandler
+
+
+
+
+
+
+' interface IMailHandler
+' {
+' }
+' IMailHandler <|-- IMailReceiver
+' IMailHandler <|-- IMailSender
+
+' interface IPostHandler
+' {
+' }
+' IPostReceiver --|> IPostHandler
+' IPostSender  --|> IPostHandler
 
 @enduml
