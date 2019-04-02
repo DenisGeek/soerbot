@@ -1,0 +1,77 @@
+@startuml
+scale 1
+' skinparam classAttributeIconSize 0
+
+interface IAddress
+{
+    + String Address 
+}
+interface IAddresseeName
+{
+    + String AddresseeName
+} 
+interface IHeader
+{
+    + String Header 
+}
+interface IMessage
+{
+    + JSON Message
+}
+interface IMailMessage
+{
+
+}
+
+
+interface ICorrespondence
+{
+}
+interface IOutputCorrespondence
+{
+    - IMailSender MailSender
+    + void Init(IMailSender)
+    + void Receive(IMailSender)
+}
+interface IMailSender
+{
+    + void Init()
+    + void Send(IMailMessage)
+}
+
+
+interface IIncomeCorrespondence
+{
+    + void Send(IMailMessage)
+}
+interface IMailReceiver
+{
+    + IIncomeCorrespondence IncomeCorrespondence
+    + void Init(IIncomeCorrespondence)
+    + void Received(IMailMessage)
+}
+
+interface IMail
+{
+}
+
+IMessage <|-- IMailMessage
+IHeader <|-- IMailMessage
+IAddresseeName <|-- IMailMessage
+IAddress <|-- IMailMessage
+
+ICorrespondence <|-- IIncomeCorrespondence
+ICorrespondence <|-- IOutputCorrespondence
+
+IOutputCorrespondence ..> IMailMessage
+IIncomeCorrespondence ..> IMailMessage
+IMailMessage <-- IMailSender
+IMailMessage <.. IMailReceiver
+
+IOutputCorrespondence --o IMailSender
+IIncomeCorrespondence o-- IMailReceiver
+
+IMailReceiver --|> IMail
+IMailSender  --|> IMail
+
+@enduml

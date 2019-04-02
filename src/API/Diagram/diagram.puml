@@ -1,0 +1,8 @@
+@startuml
+scale 3
+Class11 --|> Class12
+Class21 --> Class22
+Class31 ..> Class32
+Class41 ..|> Class42
+Class51 *--> Class52
+@enduml
