@@ -3,8 +3,8 @@ scale 1
 ' skinparam classAttributeIconSize 0
 
 namespace API.Mail #DDDDDD {
-    IMailAddress o-- IMail
-    IMessage o-- IMail
+    IMailAddress "2" *-- IMail
+    IMessage "1" *-- IMail
 
     IContent <|-- IMessage
     IHeader <|-- IMessage
@@ -63,7 +63,7 @@ namespace API.Send #DDDDDD {
     }
 
     IMailSender ..> API.Mail.IMail
-    IMailSender "many" --o MailPicker :send
+    IMailSender "many" --* MailPicker :send
     MailPicker --o "many" IPostSender :refreshSenders
     API.Mail.IMail <-- IPostSender
 }
@@ -92,9 +92,9 @@ namespace API.Receive #DDDDDD {
         + void received(IMail)
     }
 
-    IMailReceiver ..> API.Mail.IMail
+    IMailReceiver --> API.Mail.IMail
     IMailReceiver "many" o-- MailSorter : registerRecipient
-    MailSorter "many" --o IPostReceiver : refreshReceivers
+    MailSorter --o "many" IPostReceiver : refreshReceivers
     API.Mail.IMail <-- IPostReceiver
 }
 
