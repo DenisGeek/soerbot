@@ -64,6 +64,7 @@ namespace API.Send #DDDDDD {
 
     IMailSender ..> API.Mail.IMail
     IMailSender "many" --* MailPicker :send
+    MailPicker --> API.Mail.IMail
     MailPicker --o "many" IPostSender :refreshSenders
     API.Mail.IMail <-- IPostSender
 }
@@ -94,6 +95,7 @@ namespace API.Receive #DDDDDD {
 
     IMailReceiver --> API.Mail.IMail
     IMailReceiver "many" o-- MailSorter : registerRecipient
+    MailSorter --> API.Mail.IMail
     MailSorter --o "many" IPostReceiver : refreshReceivers
     API.Mail.IMail <-- IPostReceiver
 }
