@@ -6,10 +6,15 @@ interface IAddress
 {
     + String Address 
 }
-interface IAddresseeName
+interface IAddressee
 {
-    + String AddresseeName
+    + String Addressee
 } 
+
+interface IMailAddress
+{
+}
+
 interface IHeader
 {
     + String Header 
@@ -18,60 +23,59 @@ interface IMessage
 {
     + JSON Message
 }
-interface IMailMessage
-{
-
-}
-
-
-interface ICorrespondence
-{
-}
-interface IOutputCorrespondence
-{
-    - IMailSender MailSender
-    + void Init(IMailSender)
-    + void Receive(IMailSender)
-}
-interface IMailSender
-{
-    + void Init()
-    + void Send(IMailMessage)
-}
-
-
-interface IIncomeCorrespondence
-{
-    + void Send(IMailMessage)
-}
-interface IMailReceiver
-{
-    + IIncomeCorrespondence IncomeCorrespondence
-    + void Init(IIncomeCorrespondence)
-    + void Received(IMailMessage)
-}
 
 interface IMail
 {
 }
 
-IMessage <|-- IMailMessage
-IHeader <|-- IMailMessage
-IAddresseeName <|-- IMailMessage
-IAddress <|-- IMailMessage
+interface IMailHandler
+{
+}
+interface IMailSender
+{
+    - IPostSender PostSender
+    + void Init(IPostSender)
+    + void Send(IPostSender)
+}
+interface IPostSender
+{
+    + void Init()
+    + void Send(IMailAddress)
+}
 
-ICorrespondence <|-- IIncomeCorrespondence
-ICorrespondence <|-- IOutputCorrespondence
 
-IOutputCorrespondence ..> IMailMessage
-IIncomeCorrespondence ..> IMailMessage
-IMailMessage <-- IMailSender
-IMailMessage <.. IMailReceiver
+interface IMailReceiver
+{
+    + void Receive(IMailAddress)
+}
+interface IPostReceiver
+{
+    + IMailReceiver MailReceiver
+    + void Init(IMailReceiver)
+    + void Received(IMailAddress)
+}
 
-IOutputCorrespondence --o IMailSender
-IIncomeCorrespondence o-- IMailReceiver
+interface IPostHandler
+{
+}
 
-IMailReceiver --|> IMail
-IMailSender  --|> IMail
+IMessage <|-- IMailAddress
+IHeader <|-- IMailAddress
+IAddressee <|-- IMailAddress
+IAddress <|-- IMailAddress
+
+IMailHandler <|-- IMailReceiver
+IMailHandler <|-- IMailSender
+
+IMailSender ..> IMailAddress
+IMailReceiver ..> IMailAddress
+IMailAddress <-- IPostSender
+IMailAddress <.. IPostReceiver
+
+IMailSender --o IPostSender
+IMailReceiver o-- IPostReceiver
+
+IPostReceiver --|> IPostHandler
+IPostSender  --|> IPostHandler
 
 @enduml
