@@ -62,26 +62,26 @@ namespace API.Send #DDDDDD {
         + void init()
         + void send(IMail)
     }
-    class MailSenderFactrory
+    class FMailSender << (F,#FF7700) Factory >>
     {
         + List<IMailSenderClass> scan()
         + List<IMailSender> createIntances(List<IMailSenderClass>)
     }
-    class PostSenderFactrory
+    class FPostSender << (F,#FF7700) Factory >>
     {
         + List<IPostSenderClass> scan()
         + List<IPostSenderClass> testConnection(List<IPostSenderClass>)
         + List<IPostSender> createIntances(List<IPostSenderClass>)
     }
-    MailSenderFactrory --o MailPicker
-    MailSenderFactrory <- IMailSender
+    FMailSender --o MailPicker
+    FMailSender <- IMailSender
     IMailSender ..> API.Mail.IMail
     IMailSender "many" --* MailPicker :send
     MailPicker --> API.Mail.IMail
-    MailPicker --o "1" PostSenderFactrory :refreshSenders
+    MailPicker --o "1" FPostSender :refreshSenders
     MailPicker --o "many" IPostSender
     API.Mail.IMail <-- IPostSender
-    IPostSender -> PostSenderFactrory
+    IPostSender -> FPostSender
 }
 
 
@@ -108,26 +108,26 @@ namespace API.Receive #DDDDDD {
         + void init(MailSorter)
         + void received(IMail)
     }
-    class MailReceiverFactrory
+    class FMailReceiver << (F,#FF7700) Factory >>
     {
         + List<IMailReceiverClass> scan()
         + List<IMailReceiver> createIntances(List<IMailReceiverClass>)
     }
-    class PostReceiverFactrory
+    class FPostReceiver << (F,#FF7700) Factory >>
     {
         + List<IPostReceiverClass> scan()
         + List<IPostReceiverClass> testConnection(List<IPostReceiverClass>)
         + List<IPostReceiver> createIntances(List<IPostReceiverClass>)
     }
-    MailReceiverFactrory --> MailSorter : registerRecipient
-    IMailReceiver -> MailReceiverFactrory
+    FMailReceiver --> MailSorter : registerRecipient
+    IMailReceiver -> FMailReceiver
     IMailReceiver --> API.Mail.IMail
     IMailReceiver "many" o-- MailSorter
     MailSorter --> API.Mail.IMail
-    MailSorter --o "1" PostReceiverFactrory : refreshReceivers
+    MailSorter --o "1" FPostReceiver : refreshReceivers
     MailSorter --o "many" IPostReceiver
     API.Mail.IMail <-- IPostReceiver
-    IPostReceiver -> PostReceiverFactrory
+    IPostReceiver -> FPostReceiver
 }
 
 
