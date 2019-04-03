@@ -61,12 +61,26 @@ namespace API.Send #DDDDDD {
         + void init()
         + void send(IMail)
     }
+    class MailSenderFactrory
+    {
+        + List<IMailSenderClass> scan()
+        + List<IMailSender> createIntances(List<IMailSenderClass>)
+    }
+    class PostSenderFactrory
+    {
+        + List<IPostSenderClass> scan()
+        + List<IPostSenderClass> testConnection(List<IPostSenderClass>)
+        + List<IPostSender> createIntances(List<IPostSenderClass>)
+    }
 
+    MailSenderFactrory -> IMailSender
     IMailSender ..> API.Mail.IMail
     IMailSender "many" --* MailPicker :send
     MailPicker --> API.Mail.IMail
+    MailPicker --o PostSenderFactrory
     MailPicker --o "many" IPostSender :refreshSenders
     API.Mail.IMail <-- IPostSender
+    IPostSender -> PostSenderFactrory
 }
 
 
@@ -92,12 +106,26 @@ namespace API.Receive #DDDDDD {
         + void init(MailSorter)
         + void received(IMail)
     }
+    class MailReceiverFactrory
+    {
+        + List<IMailReceiverClass> scan()
+        + List<IMailReceiver> createIntances(List<IMailReceiverClass>)
+    }
+    class PostReceiverFactrory
+    {
+        + List<IPostReceiverClass> scan()
+        + List<IPostReceiverClass> testConnection(List<IPostReceiverClass>)
+        + List<IPostReceiver> createIntances(List<IPostReceiverClass>)
+    }
 
+    IMailReceiver -> MailReceiverFactrory
     IMailReceiver --> API.Mail.IMail
     IMailReceiver "many" o-- MailSorter : registerRecipient
     MailSorter --> API.Mail.IMail
+    MailSorter --o PostReceiverFactrory
     MailSorter --o "many" IPostReceiver : refreshReceivers
     API.Mail.IMail <-- IPostReceiver
+    IPostReceiver -> PostReceiverFactrory
 }
 
 
