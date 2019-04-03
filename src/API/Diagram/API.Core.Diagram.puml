@@ -74,14 +74,14 @@ namespace API.Send #DDDDDD {
         + List<IPostSender> createIntances(List<IPostSenderClass>)
     }
     FMailSender --o MailPicker
-    FMailSender <- IMailSender
+    FMailSender -> IMailSender
     IMailSender ..> API.Mail.IMail
     IMailSender "many" --* MailPicker :send
     MailPicker --> API.Mail.IMail
     MailPicker --o "1" FPostSender :refreshSenders
     MailPicker --o "many" IPostSender
     API.Mail.IMail <-- IPostSender
-    IPostSender -> FPostSender
+    IPostSender <- FPostSender
 }
 
 
@@ -120,14 +120,40 @@ namespace API.Receive #DDDDDD {
         + List<IPostReceiver> createIntances(List<IPostReceiverClass>)
     }
     FMailReceiver --> MailSorter : registerRecipient
-    IMailReceiver -> FMailReceiver
+    IMailReceiver <- FMailReceiver
     IMailReceiver --> API.Mail.IMail
     IMailReceiver "many" o-- MailSorter
     MailSorter --> API.Mail.IMail
     MailSorter --o "1" FPostReceiver : refreshReceivers
     MailSorter --o "many" IPostReceiver
     API.Mail.IMail <-- IPostReceiver
-    IPostReceiver -> FPostReceiver
+    IPostReceiver <- FPostReceiver
+}
+
+namespace API.Common #DDDDDD {
+    abstract class ClassFounderByInterface
+    {
+        List<Type> findClassesImplementsInterface(Type interface)
+    }
+    interface ITestConnection
+    {
+        bool TestConnection();
+    }
+    interface ICreateInstance
+    {
+        object CreateInstance();
+    }
+    interface IMailHandler
+    {
+    }
+    IMailHandler <|-- IMailReceiver
+    IMailHandler <|-- IMailSender
+    interface IPostHandler
+    {
+    }
+    IPostReceiver --|> IPostHandler
+    IPostSender  --|> IPostHandler
+
 }
 
 
@@ -135,17 +161,5 @@ namespace API.Receive #DDDDDD {
 
 
 
-
-' interface IMailHandler
-' {
-' }
-' IMailHandler <|-- IMailReceiver
-' IMailHandler <|-- IMailSender
-
-' interface IPostHandler
-' {
-' }
-' IPostReceiver --|> IPostHandler
-' IPostSender  --|> IPostHandler
 
 @enduml
